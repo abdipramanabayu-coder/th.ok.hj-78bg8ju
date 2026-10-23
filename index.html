@@ -1,0 +1,987 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10264a">
+<title>Kuis Kecil untukmu 💙</title>
+
+<style>
+:root {
+  --navy: #10264a;
+  --blue: #2463a6;
+  --sky: #8bc9ff;
+  --ice: #eaf5ff;
+  --white: #ffffff;
+  --text: #294665;
+  --muted: #7189a5;
+  --border: #d0e6fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Trebuchet MS", system-ui, sans-serif;
+  color: var(--text);
+  background: linear-gradient(140deg, #edf7ff, #d7ebff, #f7fbff);
+  overflow-x: hidden;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 18px;
+  transition: .2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  cursor: default;
+  opacity: .65;
+  transform: none;
+}
+
+.primary {
+  color: white;
+  background: linear-gradient(120deg, #2866aa, #4c9de8);
+  font-weight: 800;
+  box-shadow: 0 6px 16px #2463a625;
+}
+
+.secondary {
+  color: var(--blue);
+  background: #edf6ff;
+  border: 1px solid var(--border);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: min(850px, 100%);
+  margin: auto;
+  padding: 18px;
+}
+
+.page {
+  display: none;
+  animation: appear .4s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  background: #ffffffed;
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  padding: clamp(20px, 5vw, 38px);
+  box-shadow: 0 15px 40px #173c6315;
+  text-align: center;
+}
+
+.eyebrow {
+  color: var(--blue);
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  color: var(--navy);
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  line-height: 1.15;
+  margin: 12px 0;
+}
+
+h2 {
+  color: var(--navy);
+  font-size: clamp(1.45rem, 5vw, 2.1rem);
+  margin: 12px 0;
+}
+
+p {
+  line-height: 1.8;
+}
+
+.subtitle {
+  max-width: 580px;
+  margin: 12px auto 22px;
+}
+
+.small {
+  font-size: .83rem;
+  color: var(--muted);
+}
+
+.big-heart {
+  display: inline-block;
+  font-size: 3.8rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { transform: scale(1.1); }
+}
+
+/* DEKORASI */
+.decor {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.float {
+  position: absolute;
+  bottom: -35px;
+  color: #5b9fe5;
+  opacity: .35;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-115vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* KUIS */
+.quiz-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 10px;
+  font-size: .88rem;
+  font-weight: 800;
+}
+
+.progress {
+  height: 9px;
+  background: #e5f0fc;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #4e91dc, #92d0ff);
+  transition: width .3s;
+}
+
+.question {
+  color: var(--navy);
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.options {
+  display: grid;
+  gap: 11px;
+  text-align: left;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f4f9ff;
+  border: 1px solid #d7e8f8;
+  color: var(--text);
+  text-align: left;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.option:hover:not(:disabled) {
+  background: #e6f3ff;
+  border-color: #7cb8f0;
+}
+
+.option .letter {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  background: #dceeff;
+  color: var(--blue);
+  font-weight: 800;
+  border-radius: 10px;
+}
+
+.option.correct {
+  background: #e5f7ed;
+  border-color: #69bd8b;
+}
+
+.option.wrong {
+  background: #fff0f0;
+  border-color: #e5a1a1;
+}
+
+.feedback {
+  min-height: 28px;
+  font-weight: 800;
+  margin: 16px 0 5px;
+  font-size: .9rem;
+}
+
+.quiz-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* NAVIGASI PESAN */
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 18px;
+}
+
+.dot {
+  padding: 9px 12px;
+  border-radius: 99px;
+  background: #f4f9ff;
+  color: var(--blue);
+  border: 1px solid var(--border);
+  font-size: .82rem;
+}
+
+.dot.active {
+  color: white;
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+/* FOTO */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 15px;
+  border: 2px dashed #8ebce9;
+  background: linear-gradient(145deg, #f0f8ff, #d9ecff);
+  color: #4c79a5;
+  font-size: .82rem;
+  padding: 8px;
+}
+
+.photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo span {
+  text-align: center;
+}
+
+.response {
+  min-height: 35px;
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.music-status {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border-radius: 99px;
+  background: #ffffffef;
+  border: 1px solid var(--border);
+  color: var(--blue);
+  font-size: .78rem;
+  box-shadow: 0 5px 20px #173c6317;
+}
+
+.music-status button {
+  padding: 5px;
+  background: #eaf5ff;
+  color: var(--navy);
+}
+
+footer {
+  text-align: center;
+  padding: 22px 0;
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+@media(max-width:480px) {
+  .wrap { padding: 12px; }
+  .card { border-radius: 20px; padding: 21px 16px; }
+  .gallery { gap: 6px; }
+  .photo { border-radius: 10px; font-size: .7rem; }
+  .dot { padding: 8px 9px; font-size: .76rem; }
+  .music-status { bottom: 8px; right: 8px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="decor" id="decor"></div>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="lagu.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-status">
+  <span id="musicText">🎵 Musik siap</span>
+  <button id="musicButton" type="button"
+          aria-label="Putar atau jeda musik">▶</button>
+</div>
+
+<div class="wrap">
+
+<!-- =================================
+     HALAMAN 1: KUIS UMUM
+================================== -->
+<section class="page active" id="quizPage">
+  <div class="card">
+
+    <div class="big-heart">🌟✨</div>
+    <div class="eyebrow">Sebelum membuka halaman rahasia</div>
+    <h1>Kuis Kecil sederhana!</h1>
+
+    <p class="subtitle">
+      Hai, kamu! Ada 10 pertanyaan pengetahuan umum yang perlu
+      kamu selesaikan. Santai saja, pilih jawaban yang menurutmu
+      benar. Setelah selesai, ada suatu halaman rahasia yang bakal terbuka.
+    </p>
+
+    <div class="quiz-top">
+      <span id="questionCount">Soal 1 dari 5</span>
+      <span id="scoreLabel">Skor: 0</span>
+    </div>
+
+    <div class="progress">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="questionArea">
+      <div class="question" id="questionText"></div>
+      <div class="options" id="options"></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+
+      <div class="quiz-actions">
+        <button class="primary" id="nextQuestion" disabled>
+          Jawaban berikutnya →
+        </button>
+      </div>
+    </div>
+
+    <div id="quizResult" hidden>
+      <div class="big-heart">🎉</div>
+      <h2>Kuis selesai!</h2>
+      <p id="resultText"></p>
+      <p class="subtitle">
+        Terima kasih sudah bermain sampai selesai.
+        Sekarang, waktunya membuka halaman berikutnya. ⭐
+      </p>
+      <button class="primary" onclick="openMessage()">
+        Buka halaman akhir ⭐
+      </button>
+    </div>
+
+    <p class="small" style="margin-top:25px">
+      Sebuah kuis kecil, dengan halaman pertanyaan di akhir.🌟
+    </p>
+
+  </div>
+</section>
+
+<!-- =================================
+     HALAMAN 2: PESAN PEMBUKA
+================================== -->
+<section class="page" id="messagePage0">
+  <nav aria-label="Navigasi pesan">
+    <button class="dot active" onclick="goMessage(0)">♡ Pembuka</button>
+    <button class="dot" onclick="goMessage(1)">♡ Cerita</button>
+    <button class="dot" onclick="goMessage(2)">♡ Perasaan</button>
+    <button class="dot" onclick="goMessage(3)">♡ Pertanyaan</button>
+  </nav>
+
+  <div class="card">
+    <div class="big-heart">💌</div>
+    <div class="eyebrow">Sebuah pesan kecil untuk Adel Michel Aprilia</div>
+    <h1>Hai, kamu! 🌷</h1>
+
+    <p class="subtitle">
+      Ada sesuatu yang sudah lama ingin kusampaikan.
+      Nggak perlu buru-buru, baca saja sampai selesai, ya.
+    </p>
+
+    <p class="small">
+      Dari: <strong>Bayu Abdi Pramana</strong><br>
+      Untuk: <strong>Adel Michel Aprilia</strong>
+    </p>
+
+    <div class="actions">
+      <button class="secondary" onclick="backToQuiz()">
+        ← Kembali ke kuis
+      </button>
+      <button class="primary" onclick="goMessage(1)">
+        Buka pesannya ✨
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- =================================
+     HALAMAN 3: CERITA
+================================== -->
+<section class="page" id="messagePage1">
+  <nav aria-label="Navigasi pesan">
+    <button class="dot" onclick="goMessage(0)">♡ Pembuka</button>
+    <button class="dot active" onclick="goMessage(1)">♡ Cerita</button>
+    <button class="dot" onclick="goMessage(2)">♡ Perasaan</button>
+    <button class="dot" onclick="goMessage(3)">♡ Pertanyaan</button>
+  </nav>
+
+  <div class="card">
+    <div class="eyebrow">Bagian 1 · Cerita kecil</div>
+    <h2>Hal sederhana yang kuingat 🌸</h2>
+
+    <p>
+      Ada hal-hal kecil tentang dirimu yang tanpa sadar membuat
+      hariku terasa lebih menyenangkan. Cara kita ngobrol,
+      bercanda, atau sekadar bertemu, semuanya jadi kenangan
+      yang kusimpan baik-baik.
+    </p>
+
+    <p>
+      Aku nggak tahu apakah kamu menyadarinya, tapi mengenalmu
+      adalah salah satu hal yang membuatku tersenyum belakangan ini.
+    </p>
+
+    <div class="gallery">
+      <div class="photo">
+        <span>📷 Foto 1<br>Tambahkan foto1.jpg</span>
+        <img src="foto1.jpg" alt="Foto kenangan 1"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 2<br>Tambahkan foto2.jpg</span>
+        <img src="foto2.jpg" alt="Foto kenangan 2"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 3<br>Tambahkan foto3.jpg</span>
+        <img src="foto3.jpg" alt="Foto kenangan 3"
+             onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <p class="small">Bagian 1 dari 3</p>
+
+    <div class="actions">
+      <button class="secondary" onclick="goMessage(0)">← Kembali</button>
+      <button class="primary" onclick="goMessage(2)">Lanjutkan 💙</button>
+    </div>
+  </div>
+</section>
+
+<!-- =================================
+     HALAMAN 4: PERASAAN
+================================== -->
+<section class="page" id="messagePage2">
+  <nav aria-label="Navigasi pesan">
+    <button class="dot" onclick="goMessage(0)">♡ Pembuka</button>
+    <button class="dot" onclick="goMessage(1)">♡ Cerita</button>
+    <button class="dot active" onclick="goMessage(2)">♡ Perasaan</button>
+    <button class="dot" onclick="goMessage(3)">♡ Pertanyaan</button>
+  </nav>
+
+  <div class="card">
+    <div class="eyebrow">Bagian 2 · Sejujurnya</div>
+    <h2>Aku ingin jujur sama kamu 💙</h2>
+
+    <p>
+      Awalnya mungkin aku menganggap ini hanya rasa kagum biasa.
+      Tapi lama-lama, aku sadar kalau aku ingin mengenalmu lebih
+      dekat, mendengar lebih banyak ceritamu, dan menjadi seseorang
+      yang bisa ikut membuatmu tersenyum.
+    </p>
+
+    <p>
+      Aku suka sama kamu. Aku menyampaikan ini bukan untuk membuatmu
+      merasa harus membalas perasaanku, melainkan karena aku ingin
+      jujur tentang apa yang kurasakan.
+    </p>
+
+    <div class="gallery">
+      <div class="photo">
+        <span>📷 Foto 4<br>Tambahkan foto4.jpg</span>
+        <img src="foto4.jpg" alt="Foto kenangan 4"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 5<br>Tambahkan foto5.jpg</span>
+        <img src="foto5.jpg" alt="Foto kenangan 5"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 6<br>Tambahkan foto6.jpg</span>
+        <img src="foto6.jpg" alt="Foto kenangan 6"
+             onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="secondary" onclick="goMessage(1)">← Kembali</button>
+      <button class="primary" onclick="goMessage(3)">
+        Ada satu pertanyaan… 💌
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- =================================
+     HALAMAN 5: PERTANYAAN TERAKHIR
+================================== -->
+<section class="page" id="messagePage3">
+  <nav aria-label="Navigasi pesan">
+    <button class="dot" onclick="goMessage(0)">♡ Pembuka</button>
+    <button class="dot" onclick="goMessage(1)">♡ Cerita</button>
+    <button class="dot" onclick="goMessage(2)">♡ Perasaan</button>
+    <button class="dot active" onclick="goMessage(3)">♡ Pertanyaan</button>
+  </nav>
+
+  <div class="card">
+    <div class="big-heart">💙</div>
+    <div class="eyebrow">Bagian 3 · Pertanyaan terakhir</div>
+
+    <h2>Maukah kamu memberiku kesempatan?</h2>
+
+    <p>
+      Kalau kamu juga ingin, aku ingin mencoba mengenalmu lebih dekat
+      dan melihat ke mana cerita ini akan berjalan. Kita bisa
+      menjalaninya pelan-pelan, tanpa tekanan.
+    </p>
+
+    <div class="gallery">
+      <div class="photo">
+        <span>📷 Foto 7<br>Tambahkan foto7.jpg</span>
+        <img src="foto7.jpg" alt="Foto kenangan 7"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 8<br>Tambahkan foto8.jpg</span>
+        <img src="foto8.jpg" alt="Foto kenangan 8"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="photo">
+        <span>📷 Foto 9<br>Tambahkan foto9.jpg</span>
+        <img src="foto9.jpg" alt="Foto kenangan 9"
+             onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="answer('yes')">
+        ya Aku mau 💙
+      </button>
+      <button class="secondary" onclick="answer('think')">
+        oke, aku mau 💙
+      </button>
+      <button class="secondary" onclick="answer('no')">
+        baik, aku mau 💙
+      </button>
+    </div>
+
+    <p class="response" id="response" aria-live="polite"></p>
+
+    <p class="small">
+      Apa pun jawabanmu, terima kasih sudah membaca sampai akhir.
+      Aku akan menghargai keputusanmu. 🤍
+    </p>
+
+    <div class="actions">
+      <button class="secondary" onclick="goMessage(2)">
+        ← Baca lagi
+      </button>
+    </div>
+  </div>
+</section>
+
+<footer>Dibuat dengan tulus ♡</footer>
+</div>
+
+<script>
+
+// ====================================
+// DATA KUIS PENGETAHUAN UMUM
+// TOTAL: 10 SOAL
+// ====================================
+const questions = [
+  {
+    q: "Planet apa yang dikenal sebagai Planet Merah?",
+    options: ["Venus", "Mars", "Jupiter", "Merkurius"],
+    correct: 1,
+    explain: "Benar! Mars tampak kemerahan karena mineral besi di permukaannya."
+  },
+  {
+    q: "Apa ibu kota negara Jepang?",
+    options: ["Seoul", "Bangkok", "Tokyo", "Beijing"],
+    correct: 2,
+    explain: "Benar! Tokyo adalah ibu kota Jepang."
+  },
+  {
+    q: "Berapa hasil dari 12 × 8?",
+    options: ["86", "92", "96", "108"],
+    correct: 2,
+    explain: "Benar! 12 dikali 8 sama dengan 96."
+  },
+  {
+    q: "Organ tubuh manusia yang memompa darah adalah...",
+    options: ["Paru-paru", "Jantung", "Ginjal", "Lambung"],
+    correct: 1,
+    explain: "Benar! Jantung memompa darah ke seluruh tubuh."
+  },
+  {
+    q: "Gas apa yang paling banyak terdapat di atmosfer Bumi?",
+    options: ["Oksigen", "Karbon dioksida", "Hidrogen", "Nitrogen"],
+    correct: 3,
+    explain: "Benar! Nitrogen menyusun sekitar 78% atmosfer Bumi."
+  },
+  {
+    q: "Tanggal berapa Bayu Abdi Pramana lahir?",
+    options: [
+      "22 Mei 2011",
+      "8 April 2011",
+      "19 Mei 2011",
+      "12 Maret 2011"
+    ],
+    correct: 2,
+    explain: "Benar! Tanggal lahir Bayu Abdi Pramana adalah 19 Mei 2011. 🎂"
+  },
+  {
+    q: "Siapa orang yang paling pintar fisika di kelas X-C?",
+    options: [
+      "Bayu Abdi Pramana",
+      "Abdi Pramana Bayu",
+      "Pramana Abdi Bayu",
+      "(a), (b), dan (c)"
+    ],
+    correct: 3,
+    explain: "Benar semua! Ketiga pilihan nama itu merujuk pada nama yang sama. 😎"
+  },
+  {
+    q: "Siapa orang terkenal di X-C yang tanggal lahirnya 8 April 2011?",
+    options: [
+      "Bayu Abdi Pramana",
+      "Emir Suhada",
+      "Ashika Farah Naira",
+      "Adel Michel Aprilia"
+    ],
+    correct: 3,
+    explain: "Benar! Jawabannya adalah Adel Michel Aprilia. 🌷"
+  },
+  {
+    q: "Siapa ilmuwan astronomi yang paling berpengaruh di dunia?",
+    options: [
+      "Nicolaus Copernicus",
+      "Johannes Kepler",
+      "Bayu Abdi Pramana",
+      "Galileo Galilei"
+    ],
+    correct: 0,
+    explain: "Benar! Copernicus terkenal karena mengembangkan model heliosentris yang menempatkan Matahari di pusat tata surya. 🌞"
+  },
+  {
+    q: "Kenapa PROFESOR SIR BAYU ABDI PRAMANA S.AS M.F membuat website ini?",
+    options: [
+      "Untuk memberikan biodata 😃",
+      "Untuk sekadar memberikan kuis 🤔",
+      "Menyatakan perasaannya 🤭",
+      "Pikiran sendiri 😹"
+    ],
+    correct: 3,
+    explain: "Benar! Ada alasan tersendiri di balik pembuatan website ini. 😹💙"
+  }
+];
+
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+const questionText = document.getElementById("questionText");
+const optionsBox = document.getElementById("options");
+const feedback = document.getElementById("feedback");
+const nextButton = document.getElementById("nextQuestion");
+const questionCount = document.getElementById("questionCount");
+const scoreLabel = document.getElementById("scoreLabel");
+const progressFill = document.getElementById("progressFill");
+const questionArea = document.getElementById("questionArea");
+const quizResult = document.getElementById("quizResult");
+
+function renderQuestion() {
+  const item = questions[currentQuestion];
+  answered = false;
+
+  questionCount.textContent =
+    `Soal ${currentQuestion + 1} dari ${questions.length}`;
+
+  scoreLabel.textContent = `Skor: ${score}`;
+  progressFill.style.width =
+    `${(currentQuestion / questions.length) * 100}%`;
+
+  questionText.textContent = item.q;
+  optionsBox.innerHTML = "";
+  feedback.textContent = "";
+  nextButton.disabled = true;
+
+  item.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "option";
+
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = String.fromCharCode(65 + index);
+
+    const label = document.createElement("span");
+    label.textContent = option;
+
+    button.append(letter, label);
+    button.type = "button";
+
+    button.addEventListener("click", () => {
+      selectAnswer(index);
+    });
+
+    optionsBox.appendChild(button);
+  });
+
+  nextButton.textContent =
+    currentQuestion === questions.length - 1
+      ? "Lihat hasil kuis ✨"
+      : "Soal berikutnya →";
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+
+  answered = true;
+
+  const item = questions[currentQuestion];
+  const buttons = optionsBox.querySelectorAll(".option");
+
+  buttons.forEach((button, i) => {
+    button.disabled = true;
+
+    if (i === item.correct) {
+      button.classList.add("correct");
+    } else if (i === index) {
+      button.classList.add("wrong");
+    }
+  });
+
+  if (index === item.correct) {
+    score++;
+    feedback.textContent = "Benar! ✨ " + item.explain;
+    feedback.style.color = "#237b4b";
+  } else {
+    feedback.textContent =
+      "Belum tepat. " + item.explain;
+    feedback.style.color = "#4b7098";
+  }
+
+  scoreLabel.textContent = `Skor: ${score}`;
+  nextButton.disabled = false;
+}
+
+nextButton.addEventListener("click", () => {
+  if (!answered) return;
+
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+    renderQuestion();
+  } else {
+    showQuizResult();
+  }
+});
+
+function showQuizResult() {
+  questionArea.hidden = true;
+  quizResult.hidden = false;
+
+  progressFill.style.width = "100%";
+  questionCount.textContent = "10 soal selesai";
+  scoreLabel.textContent = `Skor: ${score}/10`;
+
+  document.getElementById("resultText").textContent =
+    `Kamu menjawab ${score} dari 5 soal dengan benar. ` +
+    "Terima kasih sudah menyelesaikan kuis ini! 💙";
+}
+
+renderQuestion();
+
+// ====================================
+// NAVIGASI ANTARHALAMAN
+// ====================================
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === id);
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openMessage() {
+  showPage("messagePage0");
+  startMusic();
+}
+
+function backToQuiz() {
+  showPage("quizPage");
+}
+
+function goMessage(n) {
+  showPage("messagePage" + n);
+}
+
+// ====================================
+// MUSIK LATAR
+// ====================================
+const music = document.getElementById("bgMusic");
+const musicText = document.getElementById("musicText");
+const musicButton = document.getElementById("musicButton");
+
+music.volume = 0.45;
+
+function updateMusicStatus() {
+  if (music.paused) {
+    musicText.textContent = "🎵 Musik dijeda";
+    musicButton.textContent = "▶";
+  } else {
+    musicText.textContent = "🎶 Musik diputar";
+    musicButton.textContent = "❚❚";
+  }
+}
+
+async function startMusic() {
+  try {
+    await music.play();
+    updateMusicStatus();
+  } catch (error) {
+    musicText.textContent = "🎵 Ketuk untuk memutar";
+  }
+}
+
+musicButton.addEventListener("click", () => {
+  if (music.paused) {
+    startMusic();
+  } else {
+    music.pause();
+    updateMusicStatus();
+  }
+});
+
+music.addEventListener("play", updateMusicStatus);
+music.addEventListener("pause", updateMusicStatus);
+
+music.addEventListener("error", () => {
+  musicText.textContent = "⚠️ Periksa lagu.mp3";
+});
+
+// Coba memutar musik setelah interaksi pengunjung.
+document.addEventListener("pointerdown", function firstTap() {
+  if (music.paused) startMusic();
+}, { once: true });
+
+// ====================================
+// JAWABAN PERTANYAAN TERAKHIR
+// ====================================
+function answer(type) {
+  const response = document.getElementById("response");
+
+  if (type === "yes") {
+    response.textContent =
+      "ya kamu mau 🤭" 
+  } else if (type === "think") {
+    response.textContent =
+      "oke kamu mau ya 🤭";
+  } else {
+    response.textContent =
+      "gada yang lain, harus mau 🤭";
+  }
+}
+
+// ====================================
+// ANIMASI DEKORASI BIRU
+// ====================================
+const decor = document.getElementById("decor");
+
+for (let i = 0; i < 18; i++) {
+  const item = document.createElement("span");
+
+  item.className = "float";
+  item.textContent = ["♡", "✦", "✧"][i % 3];
+  item.style.left = Math.random() * 100 + "%";
+  item.style.animationDuration = (9 + Math.random() * 9) + "s";
+  item.style.animationDelay = (-Math.random() * 15) + "s";
+  item.style.fontSize = (14 + Math.random() * 18) + "px";
+
+  decor.appendChild(item);
+}
+</script>
+
+</body>
+</html>
